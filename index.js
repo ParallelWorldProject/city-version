@@ -264,9 +264,11 @@ function gameLoop() //after the players' operations in the evening, the game loo
 	// game state check:
 	if (game.day_count>MAX_ROUND)
 	{
-		if(game.total_ppl > people_number*0.96) alert("Congratulation!YOU WIN!!!");
-		else alert("Try to see if you can do better");
+		if(game.total_ppl > people_number*0.96) alert("Congratulation! YOU WIN!!!");
+		else alert("YOU LOSE! Try again to see if you can do better!");
 	}
+	if (game.resource.medR<0||game.resource.eatR<0||game.resource.reqR<0||game.resource.extR<0)
+		alert("YOU LOSE! Try again to see if you can do better!");
 	// if (game.total_goods < lower_limit || game.total_ppl < lower_limit || game.total_healthy/game.total_ppl <lower_limit) lose!;
 
 	// player's operations (as in the file):

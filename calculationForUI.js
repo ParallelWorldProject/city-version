@@ -48,5 +48,5 @@ function printOffices(id)
 		case 9: ttt="非必需品工厂-3";break;
 		case 10: ttt="非必需品工厂-4";break;
 	}
-	return "<strong>"+ttt+ " 封锁情况: " + (game.office_quarantine_choice[id-1] ? "是" : "否") + "<br> 生产: " +game.offices[id-1].output_today + "<br> 工人: " +game.offices[id-1].work_count + "<br> 厂内新感染: "+game.offices[id-1].new_sick_count;
+	return "<strong>"+ttt+ " 封锁情况: " + (game.office_quarantine_choice[id-1] ? "是" : "否") + "<br> 生产: " +game.offices[id-1].output_today + "<br> 工人: " +game.offices[id-1].work_count+ "<br> 新感染者（进入潜伏期）: " +game.offices[id-1].new_sick_count ;
 }
