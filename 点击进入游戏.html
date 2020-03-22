@@ -1,0 +1,756 @@
+<html>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdn.bootcss.com/d3-tip/0.9.1/d3-tip.js"></script>
+
+
+<head>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="leftColumn"></div>
+    <div class="rightColumn">
+
+        <div class="controlArea">
+            <p> 控制区 </p>
+
+            <!-- 居民区 蓝色圆圈 -->
+            <input type="checkbox" id="comm-1-check" unchecked>
+            <label class="cb-label">封锁社区1</label>
+            <input type="checkbox" id="comm-2-check" unchecked>
+            <label class="cb-label">封锁社区2</label>
+            <input type="checkbox" id="comm-3-check" unchecked>
+            <label class="cb-label">封锁社区3</label>
+            <input type="checkbox" id="comm-4-check" unchecked>
+            <label class="cb-label">封锁社区4</label>
+            <br /><input type="checkbox" id="comm-5-check" unchecked>
+            <label class="cb-label">封锁社区5</label>
+            <input type="checkbox" id="comm-6-check" unchecked>
+            <label class="cb-label">封锁社区6</label>
+            <input type="checkbox" id="comm-7-check" unchecked>
+            <label class="cb-label">封锁社区7</label>
+            <input type="checkbox" id="comm-8-check" unchecked>
+            <label class="cb-label">封锁社区8</label>
+            <br /><input type="checkbox" id="comm-9-check" unchecked>
+            <label class="cb-label">封锁社区9</label>
+            <input type="checkbox" id="comm-10-check" unchecked>
+            <label class="cb-label">封锁社区10</label>
+
+            <!-- 工厂 绿色三角 -->
+            <!-- 医疗资源2个 食品2个 日用必需品2个 非必需品4个 -->
+            <br />
+            <br /><input type="checkbox" id="fac-1-check" unchecked>
+            <label class="cb-label">封锁医疗资源工厂1</label>
+            <input type="checkbox" id="fac-2-check" unchecked>
+            <label class="cb-label">封锁医疗资源工厂2</label>
+            <br />
+            <br /><input type="checkbox" id="fac-3-check" unchecked>
+            <label class="cb-label">封锁食品工厂1</label>
+            <input type="checkbox" id="fac-4-check" unchecked>
+            <label class="cb-label">封锁食品工厂2</label>
+            <br />
+            <br /><input type="checkbox" id="fac-5-check" unchecked>
+            <label class="cb-label">封锁日用必需品工厂1</label>
+            <input type="checkbox" id="fac-6-check" unchecked>
+            <label class="cb-label">封锁日用必需品工厂2</label>
+            <br />
+            <br /><input type="checkbox" id="fac-7-check" unchecked>
+            <label class="cb-label">封锁非必需品工厂1</label>
+            <input type="checkbox" id="fac-8-check" unchecked>
+            <label class="cb-label">封锁非必需品工厂2</label>
+            <br /><input type="checkbox" id="fac-9-check" unchecked>
+            <label class="cb-label">封锁非必需品工厂3</label>
+            <input type="checkbox" id="fac-10-check" unchecked>
+            <label class="cb-label">封锁非必需品工厂4</label>
+
+        </div>
+        <div id="gotoNextDay" class="gotoNextDay" style="text-align: center;">
+
+            <p>是否完成所有调整 进入下一天？</p>
+            <!-- todo: 进入下一天 game loop-->
+            <input type="text" id="request_type_1" placeholder="求援：1-医疗，2-食品，3-必需品，4-非必需品" style="width: 300px;">
+            <span onclick="gameLoop()" class="addBtn">确定进入下一天</span>
+        </div>
+        <div id="currentCityStatus" class="currentCityStatus" margin-top: 200px>
+            <!-- todo: 进入下一天 game loop-->
+        </div>
+    </div>
+    <script type="text/javascript" src="calculationForUI.js"></script>
+    <script type="text/javascript" src="resource.js"></script>
+    <script type="text/javascript" src="quarantine.js"></script>
+    <script type="text/javascript" src="index.js"></script>
+
+    <script>
+        var bodyHeight = document.body.scrollHeight //961
+        var bodyWidth = document.body.scrollWidth //1920
+
+
+        var fac1Locked = false;
+        var fac2Locked = false;
+        var fac3Locked = false;
+        var fac4Locked = false;
+        var fac5Locked = false;
+        var fac6Locked = false;
+        var fac7Locked = false;
+        var fac8Locked = false;
+        var fac9Locked = false;
+        var fac10Locked = false;
+
+        var comm1Locked = false;
+        var comm2Locked = false;
+        var comm3Locked = false;
+        var comm4Locked = false;
+        var comm5Locked = false;
+        var comm6Locked = false;
+        var comm7Locked = false;
+        var comm8Locked = false;
+        var comm9Locked = false;
+        var comm10Locked = false;
+
+        // cb for checkbox 
+
+        // fc - 工厂1-10
+        var fc1cb = document.getElementById("fac-1-check")
+        fc1cb.addEventListener('change', function() {
+            fac1Locked = this.checked;
+            game.office_quarantine_choice[0] = this.checked;
+        });
+
+        var fc2cb = document.getElementById("fac-2-check")
+        fc2cb.addEventListener('change', function() {
+            fac2Locked = this.checked;
+            game.office_quarantine_choice[1] = this.checked;
+        });
+
+        var fc3cb = document.getElementById("fac-3-check")
+        fc3cb.addEventListener('change', function() {
+            fac3Locked = this.checked;
+            game.office_quarantine_choice[2] = this.checked;
+        });
+
+        var fc4cb = document.getElementById("fac-4-check")
+        fc4cb.addEventListener('change', function() {
+            fac4Locked = this.checked;
+            game.office_quarantine_choice[3] = this.checked;
+        });
+
+        var fc5cb = document.getElementById("fac-5-check")
+        fc5cb.addEventListener('change', function() {
+            fac5Locked = this.checked;
+            game.office_quarantine_choice[4] = this.checked;
+        });
+
+        var fc6cb = document.getElementById("fac-6-check")
+        fc6cb.addEventListener('change', function() {
+            fac6Locked = this.checked;
+            game.office_quarantine_choice[5] = this.checked;
+        });
+
+        var fc7cb = document.getElementById("fac-7-check")
+        fc7cb.addEventListener('change', function() {
+            fac7Locked = this.checked;
+            game.office_quarantine_choice[6] = this.checked;
+        });
+
+        var fc8cb = document.getElementById("fac-8-check")
+        fc8cb.addEventListener('change', function() {
+            fac8Locked = this.checked;
+            game.office_quarantine_choice[7] = this.checked;
+        });
+
+        var fc9cb = document.getElementById("fac-9-check")
+        fc1cb.addEventListener('change', function() {
+            fac9Locked = this.checked;
+            game.office_quarantine_choice[8] = this.checked;
+        });
+
+        var fc10cb = document.getElementById("fac-10-check")
+        fc2cb.addEventListener('change', function() {
+            fac10Locked = this.checked;
+            game.office_quarantine_choice[9] = this.checked;
+        });
+
+        // 社区1-10
+        var com1cb = document.getElementById("comm-1-check")
+        com1cb.addEventListener('change', function() {
+            comm1Locked = this.checked;
+            game.neighbor_quarantine_choice[0] = this.checked;
+        });
+
+        var com2cb = document.getElementById("comm-2-check")
+        com2cb.addEventListener('change', function() {
+            comm2Locked = this.checked;
+            game.neighbor_quarantine_choice[1] = this.checked;
+        });
+
+        var com3cb = document.getElementById("comm-3-check")
+        com3cb.addEventListener('change', function() {
+            comm3Locked = this.checked;
+            game.neighbor_quarantine_choice[2] = this.checked;
+        });
+
+        var com4cb = document.getElementById("comm-4-check")
+        com4cb.addEventListener('change', function() {
+            comm4Locked = this.checked;
+            game.neighbor_quarantine_choice[3] = this.checked;
+        });
+
+        var com5cb = document.getElementById("comm-5-check")
+        com5cb.addEventListener('change', function() {
+            comm5Locked = this.checked;
+            game.neighbor_quarantine_choice[4] = this.checked;
+        });
+
+        var com6cb = document.getElementById("comm-6-check")
+        com6cb.addEventListener('change', function() {
+            comm6Locked = this.checked;
+            game.neighbor_quarantine_choice[5] = this.checked;
+        });
+
+        var com7cb = document.getElementById("comm-7-check")
+        com7cb.addEventListener('change', function() {
+            comm7Locked = this.checked;
+            game.neighbor_quarantine_choice[6] = this.checked;
+        });
+
+        var com8cb = document.getElementById("comm-8-check")
+        com8cb.addEventListener('change', function() {
+            comm8Locked = this.checked;
+            game.neighbor_quarantine_choice[7] = this.checked;
+        });
+
+        var com9cb = document.getElementById("comm-9-check")
+        com9cb.addEventListener('change', function() {
+            comm9Locked = this.checked;
+            game.neighbor_quarantine_choice[8] = this.checked;
+        });
+
+        var com10cb = document.getElementById("comm-10-check")
+        com6cb.addEventListener('change', function() {
+            comm10Locked = this.checked;
+            game.neighbor_quarantine_choice[9] = this.checked;
+        });
+
+
+        const svg = d3.select('body').select('div').append('svg')
+            .attr('width', bodyWidth * 0.7) //1920*0.7 = 1344
+            .attr('height', bodyHeight * 0.9); // 864
+
+        let color = d3.scaleOrdinal(d3.schemeCategory10);
+        const symbol = d3.symbol().size(500).type(d => d);
+
+        // 社区 * 4 - symbolCircle
+        // 医院 * 1 - d3.symbolCross
+        // 工厂 * 2 - symbolTriangle
+
+        // 社区 - 1 
+        let tipCom1 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(1);
+            });
+
+        svg.call(tipCom1);
+        svg.append('path')
+            .attr('transform', 'translate(100, 100)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom1.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom1.hide();
+            })
+
+
+
+        // 社区 - 2 
+        let tipCom2 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(2);
+            });
+
+        svg.call(tipCom2);
+        svg.append('path')
+            .attr('transform', 'translate(200, 200)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom2.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom2.hide();
+            })
+
+        // 社区 - 3
+        let tipCom3 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(3);
+            });
+
+        svg.call(tipCom3);
+        svg.append('path')
+            .attr('transform', 'translate(200, 250)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom3.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom3.hide();
+            })
+
+
+        // 社区 - 4
+        let tipCom4 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(4);
+            });
+
+        svg.call(tipCom4);
+        svg.append('path')
+            .attr('transform', 'translate(300, 200)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom4.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom4.hide();
+            })
+
+        // 社区 - 5
+        let tipCom5 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(5);
+            });
+
+        svg.call(tipCom5);
+        svg.append('path')
+            .attr('transform', 'translate(200, 500)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom5.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom5.hide();
+            })
+
+        // 社区 - 6
+        let tipCom6 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(6);
+            });
+
+        svg.call(tipCom6);
+        svg.append('path')
+            .attr('transform', 'translate(550, 350)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom6.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom6.hide();
+            })
+
+        // 社区 - 7
+        let tipCom7 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(7);
+            });
+
+        svg.call(tipCom7);
+        svg.append('path')
+            .attr('transform', 'translate(700, 700)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom7.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom7.hide();
+            })
+
+        // 社区 - 8
+        let tipCom8 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(8);
+            });
+
+        svg.call(tipCom8);
+        svg.append('path')
+            .attr('transform', 'translate(800, 300)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom8.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom8.hide();
+            })
+
+        // 社区 - 9
+        let tipCom9 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(9);
+            });
+
+        svg.call(tipCom9);
+        svg.append('path')
+            .attr('transform', 'translate(900, 750)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom9.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom9.hide();
+            })
+
+        // 社区 - 10
+        let tipCom10 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printNeighbors(10);
+            });
+
+        svg.call(tipCom10);
+        svg.append('path')
+            .attr('transform', 'translate(750, 600)')
+            .attr("d", d3.symbol().type(d3.symbolCircle).size(1200))
+            .attr('fill', (d, i) => color(i))
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipCom10.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', color(b)).selectAll('text').remove();
+                tipCom10.hide();
+            })
+
+        // 医院 - 1
+        let tipHosp1 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printHospitals();
+            });
+
+        svg.call(tipHosp1);
+        svg.append('path')
+            .attr('transform', 'translate(500, 500)')
+            .attr("d", d3.symbol().type(d3.symbolCross).size(3000))
+            .attr('fill', 'red')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipHosp1.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'red').selectAll('text').remove();
+                tipHosp1.hide();
+            })
+
+        // 工厂 - 1
+        let tipFac1 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(1);
+            });
+
+        svg.call(tipFac1);
+        svg.append('path')
+            .attr('transform', 'translate(700, 250)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac1.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac1.hide();
+            })
+
+        // 工厂 - 2
+        let tipFac2 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(2);
+            });
+
+        svg.call(tipFac2);
+        svg.append('path')
+            .attr('transform', 'translate(200, 700)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac2.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac2.hide();
+            })
+
+        // 工厂 - 3
+        let tipFac3 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(3);
+            });
+
+        svg.call(tipFac3);
+        svg.append('path')
+            .attr('transform', 'translate(900, 200)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac3.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac3.hide();
+            })
+
+        //工厂-4
+        let tipFac4 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(4);
+            });
+
+        svg.call(tipFac4);
+        svg.append('path')
+            .attr('transform', 'translate(800, 400)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac4.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac4.hide();
+            })
+
+        //工厂-5
+        let tipFac5 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(5);
+            });
+
+        svg.call(tipFac5);
+        svg.append('path')
+            .attr('transform', 'translate(450, 700)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2500))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac5.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac5.hide();
+            })
+
+        // 工厂-6
+        let tipFac6 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(6);
+            });
+
+        svg.call(tipFac6);
+        svg.append('path')
+            .attr('transform', 'translate(350, 350)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac6.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac6.hide();
+            })
+
+        // 工厂-7
+        let tipFac7 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(7);
+            });
+
+        svg.call(tipFac7);
+        svg.append('path')
+            .attr('transform', 'translate(600, 600)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac7.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac7.hide();
+            })
+
+        //工厂-8
+        let tipFac8 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(8);
+            });
+
+        svg.call(tipFac8);
+        svg.append('path')
+            .attr('transform', 'translate(100, 700)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac8.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac8.hide();
+            })
+
+        //工厂-9
+        let tipFac9 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(9);
+            });
+
+        svg.call(tipFac9);
+        svg.append('path')
+            .attr('transform', 'translate(800, 650)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac9.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac9.hide();
+            })
+
+        //工厂-10
+        let tipFac10 = d3.tip() // 设置tip
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function() {
+                return printOffices(10);
+            });
+
+        svg.call(tipFac10);
+        svg.append('path')
+            .attr('transform', 'translate(650, 150)')
+            .attr("d", d3.symbol().type(d3.symbolTriangle).size(2000))
+            .attr('fill', 'green')
+            .attr('stroke', 'black')
+            .on('mouseover', function(bool) {
+                let args = Array.prototype.slice.call(arguments);
+                d3.select(this).attr('fill', 'yellow');
+                tipFac10.show.apply(this, [...args])
+            })
+            .on('mouseout', function(a, b, c) {
+                d3.select(this).attr('fill', 'green').selectAll('text').remove();
+                tipFac10.hide();
+            })
+    </script>
+
+</body>
+
+</html>
